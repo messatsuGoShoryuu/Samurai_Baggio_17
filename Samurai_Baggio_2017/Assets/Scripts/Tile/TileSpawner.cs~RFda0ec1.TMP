@@ -1,0 +1,57 @@
+﻿using UnityEngine;
+using System.Collections;
+using UnityEditor;
+
+[ExecuteInEditMode]
+public class TileSpawner : MonoBehaviour
+{
+    public Tile tile;
+    Tile m_lastSpawned;
+	// Use this for initialization
+	void Start ()
+    {
+	    
+	}
+
+    void OnEnable()
+    {
+        Tile.OnRequestNewTile += Tile_OnRequestNewTile;
+    }
+
+    private void Tile_OnRequestNewTile(Vector3 position)
+    {
+        instantiate(position);
+        Selection.activeGameObject = m_lastSpawned;
+    }
+
+    void OnDisable()
+    {
+        Tile.OnRequestNewTile += Tile_OnRequestNewTile;
+    }
+    public void instantiate(Vector3 position)
+    {
+        if (tile == null) return;
+    
+
+        Vector3 finalPos = Vector3.zero;
+
+        finalPos.x = Mathf.FloorToInt(position.x / tile.metrics.x) * tile.metrics.x + tile.metrics.x / 2.0f;
+        finalPos.y = Mathf.FloorToInt(position.y / tile.metrics.y) * tile.metrics.y + tile.metrics.y / 2.0f;
+        finalPos.z = tile.transform.position.z;
+
+        m_lastSpawned = GameObject.Instantiate(tile, finalPos, Quaternion.identity) as Tile;
+        m_lastSpawned.transform.parent = this.transform;
+        Debug.Log("position = " + position +" final pos = " + finalPos);
+    }
+
+    public GameObject getLastSpawned()
+    {
+        return m_lastSpawned.gameObject;
+    }
+	
+	// Update is called once per frame
+	void Update ()
+    {
+	
+	}
+}
